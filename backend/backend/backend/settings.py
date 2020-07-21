@@ -23,8 +23,14 @@ SECRET_KEY = '!8z&3ky0vg#g8czgb!9d=*n0(*5^=_k19umdzl6+^_z0$)(igl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+CORS_ORIGIN_ALLOW_ALL = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost'
+]
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000', 'http://localhost:4000', 'http://127.0.0.1:4000'
+]
 
 # Application definition
 

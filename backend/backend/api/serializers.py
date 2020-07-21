@@ -9,13 +9,14 @@ from generic_relations.relations import GenericRelatedField
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'get_full_name')
+        fields = ('id', 'username', 'password', 'get_full_name', 'first_name', 'last_name')
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
-        def create(self, validated_data):
-            user = User.objects.create_user(**validated_data)
-            Token.objects.create(user=user)
-            return user
+    def create(self, validated_data):
+        print(validated_data)
+        user = User.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
+        return user
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -24,6 +25,12 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         return obj.image.url
+
+    def create(self, validated_data):
+        print(validated_data)
+        user = UserSerializer().create(dict(**validated_data['user']))
+        account = Account.objects.create(user=user)
+        return account
 
     class Meta:
         model = Account
@@ -57,10 +64,16 @@ class PostSerializer(serializers.ModelSerializer):
     video_url = serializers.SerializerMethodField('get_video_url')
 
     def get_image_url(self, obj):
-        return obj.image.url
+        if obj.image:
+            return obj.image.url
+        else:
+            return None
 
     def get_video_url(self, obj):
-        return obj.video.url
+        if obj.video:
+            return obj.video.url
+        else:
+            return None
 
     class Meta:
         model = Post

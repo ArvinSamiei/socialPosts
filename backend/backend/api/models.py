@@ -8,9 +8,10 @@ from channel.models import Channel
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(blank=True, null=True, upload_to='users/images')
-    user_followings = models.ManyToManyField('self', blank=True, null=True, related_name='follwers')
-    channel_followings = models.ManyToManyField(Channel, blank=True, null=True)
+    image = models.ImageField(blank=True, null=True, upload_to='users/images',
+                              default='users/images/anonymous-user.png')
+    user_followings = models.ManyToManyField('self', blank=True, related_name='follwers')
+    channel_followings = models.ManyToManyField(Channel, blank=True)
 
     def __str__(self):
         return self.user.get_full_name()
@@ -34,9 +35,7 @@ class Comment(models.Model):
     Post = models.OneToOneField(Post, on_delete=models.CASCADE)
     User = models.OneToOneField(Account, on_delete=models.CASCADE)
 
+
 class Message(models.Model):
     user = models.ForeignKey(Account, models.CASCADE)
     text = models.TextField()
-
-
-
