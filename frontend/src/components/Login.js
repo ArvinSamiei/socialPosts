@@ -31,7 +31,7 @@ class Login extends React.Component{
                 return
             }
             console.log(res)
-            this.props.cookies.set('token', res.data.token)
+            this.props.cookies.set('token', res.data.token, { path: '/' })
             this.props.history.push('/')
             this.props.login(true);
         })

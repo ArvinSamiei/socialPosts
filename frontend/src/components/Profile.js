@@ -5,14 +5,15 @@ import { getUsersFollowing, currentUser, uploadimage} from '../actions';
 import { followingChannels} from '../actions';
 import { connect } from "react-redux";
 import ImageUploader from 'react-images-upload';
+import './Profile.css'
 
 class Profile extends React.Component{
     state = {pictures: []}
 
     componentDidMount(){
-        this.props.currentUser(this.props.cookies.get('token'));
-        this.props.followingChannels(this.props.cookies.get('token'));
-        this.props.getUsersFollowing(this.props.cookies.get('token'))
+        this.props.currentUser(this.props.cookies.get('token', { path: '/' }));
+        this.props.followingChannels(this.props.cookies.get('token', { path: '/' }));
+        this.props.getUsersFollowing(this.props.cookies.get('token', { path: '/' }))
     }
 
     onDrop = (picture) => {
@@ -24,11 +25,17 @@ class Profile extends React.Component{
 
     handleSubmit = (e) => {
         e.preventDefault()
-        this.props.uploadimage(this.props.cookies.get('token'), this.state.pictures)
+        this.props.uploadimage(this.props.cookies.get('token', { path: '/' }), this.state.pictures)
+    }
+
+    handleClick = (type, id) => {
+        if(type == 0){
+            this.props.history.push(`otherprofile/${id}`)
+        }
     }
 
     render() {
-        if(!this.props.cookies.get('token')){
+        if(!this.props.cookies.get('token', { path: '/' })){
             this.props.history.push('/login')
             return null
         }
@@ -53,10 +60,28 @@ class Profile extends React.Component{
                                 <tbody> 
                                     {this.props.usersFollowing? this.props.usersFollowing.map(e => {
                                         return (
-                                                <tr key={e.id}>
+                                                <tr className="pointer" onClick={() => this.handleClick(0, e.id)} key={e.id}>
                                                     <td>
                                                         <img style={{width: 25, height: 25}} src={`http://localhost:8000/${e.image_url}/`} />
                                                         <strong>{e.user.get_full_name}</strong> 
+                                                    </td>
+                                                </tr>
+                                            
+                                        )
+                                    }): null}
+                                
+                                    
+                                </tbody>
+                            </table>
+                            <h5 className="mt-2"><span className="fa fa-clock-o ion-clock float-right"></span> Following Channels</h5>
+                            <table className="table table-sm table-hover table-striped">
+                                <tbody> 
+                                    {this.props.channelsFollowing? this.props.channelsFollowing.map(e => {
+                                        return (
+                                                <tr className="pointer" onClick={() => this.handleClick(1, e.id)} key={e.id}>
+                                                    <td>
+                                                        <img style={{width: 25, height: 25}} src={`http://localhost:8000/${e.image_url}/`} />
+                                                        <strong>{e.name}</strong> 
                                                     </td>
                                                 </tr>
                                             

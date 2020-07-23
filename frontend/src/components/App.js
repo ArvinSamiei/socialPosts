@@ -7,6 +7,7 @@ import Register from './Register'
 import Header from './Header';
 import Profile from './Profile'
 import OtherProfiles from './OtherProfiles';
+import Channel from './Channel'
 
 class App extends React.Component{
     render() {
@@ -20,6 +21,7 @@ class App extends React.Component{
                         <Route exact path='/register' component={Register} />
                         <Route exact path='/profile' component={Profile} />
                         <Route exact path='/otherprofile/:id' component={OtherProfiles} />
+                        <Route exact path='/channel/:id' component={Channel} />
                     </Switch>
                 </BrowserRouter>
             </CookiesProvider>

@@ -10,12 +10,27 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from channel.models import Channel
+from channel.serializers import ChannelSerializer
 
 
 class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = AccountSerializer
     queryset = Account.objects.all()
     authentication_classes = (TokenAuthentication,)
+
+    @action(detail=True, methods=['POST'])
+    def follow(self, request, pk=None):
+        user = request.user
+        user = Account.objects.get(user=user.id)
+        user.user_followings.add(pk)
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['POST'])
+    def unfollow(self, request, pk=None):
+        user = request.user
+        user = Account.objects.get(user=user.id)
+        user.user_followings.remove(pk)
+        return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['GET'])
     def currentUser(self, request, pk=None):
@@ -37,7 +52,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         usere = request.user
         user = Account.objects.get(user=usere.id)
         channels = user.channel_followings
-        serializer = AccountSerializer(channels, many=True)
+        serializer = ChannelSerializer(channels, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['PUT'])
@@ -81,3 +96,14 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = [AllowAny, ]
+
+    @action(detail=False, methods=['GET'])
+    def followings(self, request, pk=None):
+        user = request.user
+        user = Account.objects.get(user=user.id)
+        posts = Post.objects.filter(Q(creator_type=ContentType.objects.get_for_model(Channel).id,
+                                      object_id__in=user.channel_followings.values('pk')) | Q(
+            creator_type=ContentType.objects.get_for_model(Account).id,
+            object_id__in=user.user_followings.values('pk')))
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

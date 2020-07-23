@@ -34,7 +34,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ('id', 'user', 'image_url')
+        fields = ('id', 'user', 'image_url', 'user_followings')
 
 
 class CreatorRelatedField(serializers.RelatedField):

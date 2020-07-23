@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import './Header.css'
 import {Link} from 'react-router-dom'
 import {withCookies} from 'react-cookie'
-import { login } from "../actions";
+import { login, logout } from "../actions";
 
 class Header extends React.Component{
     state = {activeTabClassName: 'home'}
@@ -47,39 +47,40 @@ class Header extends React.Component{
     }
 
     logout = () => {
-        this.props.cookies.remove('token')
+        this.props.cookies.remove('token', { path: '/' })
         this.props.login(false);
+        this.props.logout();
         this.setState({activeTabClassName: ''})
     }
 
     renderLogin = () =>{
-        if(!this.props.cookies.get('token'))
+        if(!this.props.cookies.get('token', { path: '/' }))
             return <Link name="login" onClick={this.handleClick} ref={this.loginRef} className={(this.state.activeTabClassName === "login") ? "active" : ""} to='/login'>Login</Link>
         else 
             return null
     }
 
     renderSignup = () =>{
-        if(!this.props.cookies.get('token'))
+        if(!this.props.cookies.get('token', { path: '/' }))
             return <Link name="register" onClick={this.handleClick} ref={this.loginRef} className={(this.state.activeTabClassName === "register") ? "active" : ""} to='/register'>Register</Link>
         else 
             return null
     }
 
     renderHome = () => {
-        if(this.props.cookies.get('token'))
+        if(this.props.cookies.get('token', { path: '/' }))
             return <Link name="home" onClick={this.handleClick} ref={this.homeRef} className={(this.state.activeTabClassName === "home") ? "active" : ""} to='/'>Home</Link>
         else return null
     }
 
     renderProfile = () => {
-        if(this.props.cookies.get('token'))
+        if(this.props.cookies.get('token', { path: '/' }))
             return <Link name="profile" onClick={this.handleClick} ref={this.profileRef} className={(this.state.activeTabClassName === "profile") ? "active" : ""} to='/profile'>Profile</Link>
         else return null
     }
 
     renderLogout = () => {
-        if(this.props.cookies.get('token'))
+        if(this.props.cookies.get('token', { path: '/' }))
             return <Link name="logout" onClick={this.logout} className={(this.state.activeTabClassName === "logout") ? "active" : ""} to='/login'>Logout</Link>
         else return null
     }
@@ -101,4 +102,4 @@ const mapStateToProps = state => {
 	isLoggedIn: state.login,
 })};
 
-export default connect(mapStateToProps, { login })(withCookies(Header));
+export default connect(mapStateToProps, { login, logout })(withCookies(Header));
